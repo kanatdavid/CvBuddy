@@ -12,7 +12,7 @@ using bla.DAL;
 namespace DAL.Migrations
 {
     [DbContext(typeof(CVBuddyContext))]
-    [Migration("20260111171516_init")]
+    [Migration("20260111184017_init")]
     partial class init
     {
         /// <inheritdoc />
