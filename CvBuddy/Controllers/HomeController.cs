@@ -27,13 +27,6 @@ namespace bla.Controllers
                 .ThenInclude(pu => pu.Project)
                 .ToListAsync();
 
-            //if (!User.Identity!.IsAuthenticated)
-            //{
-            //    users = users
-            //        .Where(u => u.OneCv?.IsPrivate != true)
-            //        .ToList();
-            //}
-
             //Om man är utloggad så ska man inte se privata profiler
             if (!User.Identity!.IsAuthenticated)
             {
@@ -58,42 +51,12 @@ namespace bla.Controllers
 
 
 
-            var usersCv = await GetLoggedInUsersCvAsync(); //HHHHHHHHÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄRRRRRRRRRRRRRRRRRRRRRRRR THROWA
+            var usersCv = await GetLoggedInUsersCvAsync();
             ViewBag.HasCv = usersCv != null;
-
-
-            //Behövde göra kontrollen i view istället eftersom att kontrollen
-            //görs en gång här, måste ha 1 kontroll för varje cv mot 1 userId
-            //Därför ViewBag.userId
-            //ViewBag.CanSend = true;
-
             ViewBag.userId = _userManager.GetUserId(User);
-
-
-            //if (User.Identity!.IsAuthenticated)//Om användaren är inloggad
-            //{
-            //    if (ViewBag.HasCv)//och har ett cv
-            //    {
-            //        var userId = _userManager.GetUserId(User);
-            //        if(usersCv!.OneUser!.Id == userId)//kolla om det är inloggade användarens cv
-            //            ViewBag.CanSend = false;
-
-            //    }
-            //}
-
-            //if (User.Identity!.IsAuthenticated)
-            //{
-            //    var userId = _userManager.GetUserId(User);
-            //    if (ViewBag.HasCv)
-            //    {
-            //        if (userId != usersCv!.UserId)
-            //            ViewBag.CanSend = false;
-            //    }
-            //}
-
             ViewBag.CvIndexHeadline = "Recent Cvs";
 
-            var userId = _userManager.GetUserId(User);//ändring av project utskriften enda ner
+            var userId = _userManager.GetUserId(User);
             var isAuthenticated = User.Identity!.IsAuthenticated;
 
             var projList = await _context.Projects
@@ -130,19 +93,16 @@ namespace bla.Controllers
                     IsUserInProject = relation != null
                 });
             }
-
             filteredProjects = filteredProjects
                 .Where(pvm => pvm.Project.Enddate == null)
                 .OrderByDescending(pvm => pvm.Project.PublishDate)
                 .Take(10)
                 .ToList();
-
             var vm = new HomeIndexViewModel
             {
                 UserList = users,
                 ProjectList = filteredProjects,
             };
-
             return View(vm);
         }
 
@@ -164,26 +124,10 @@ namespace bla.Controllers
                    .Include(cv => cv.Interests)
                    .Include(cv => cv.OneUser)
                    .ThenInclude(oneUser => oneUser!.ProjectUsers)
-                   .FirstOrDefaultAsync(cv => cv.UserId == userId); //Kan göra cv till null ändå ----------------------HÄÄÄÄÄÄÄÄÄRRRRRRR----------------------------------------
+                   .FirstOrDefaultAsync(cv => cv.UserId == userId);
                 return cv;
             }
-            //Cv? cv = await _context.Cvs----------------------------- byttes ut mot den nedan vid MANUAL MERGE
-            //        .Include(cv => cv.Education)
-            //        .Include(cv => cv.Experiences)
-            //        .Include(cv => cv.Skills)
-            //        .Include(cv => cv.Certificates)
-            //        .Include(cv => cv.PersonalCharacteristics)
-            //        .Include(cv => cv.Interests)
-            //        .Include(cv => cv.OneUser)
-            //        .Include(cv => cv.CvProjects)
-            //        .ThenInclude(cp => cp.OneProject)
-            //        .FirstOrDefaultAsync(cv => cv.UserId == userId); //Kan göra cv till null ändå
-
-
-            //if (cv == null)
-            //    NotFound();
             return null;
-
         }
 
     }

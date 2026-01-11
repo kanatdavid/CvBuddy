@@ -37,26 +37,16 @@ namespace bla.Controllers
                     return View(cvVM);
                 Cv cv = new Cv
                 {
-                    ImageFilePath = cvVM.ImageFile!.Name, //ImageFile kan inte vara null, eftersom att den är [Required], stoppas av Modelstate.IsValid
+                    ImageFilePath = cvVM.ImageFile!.Name,
                     UserId = _userManager.GetUserId(User)
                 };
 
                 cv.Education = new();
 
-                //if (cvVM.ImageFile == null || cvVM.ImageFile.Length == 0)
-                //{
-                //    ModelState.AddModelError("ImageFile", "Please upload an image");
-                //    ViewBag.eror = "Please upload an image";
-                //    return View(cvVM);
-                //}
-
                 var uploadeFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "CvImages");
                 Directory.CreateDirectory(uploadeFolder);
 
-                var ext = Path.GetExtension(cvVM.ImageFile.FileName);//null
-
-                //if (!IsValidExtension(ext))
-                //    return View(cv);
+                var ext = Path.GetExtension(cvVM.ImageFile.FileName);
 
                 var fileName = Guid.NewGuid().ToString() + ext;
 
@@ -86,12 +76,12 @@ namespace bla.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> ReadCv(int? Cid) //måste heta exakt samma som asp-route-Cid="@item.OneCv.Cid". Detta Cid är Cid från det Cv som man klickar på i startsidan
+        public async Task<IActionResult> ReadCv(int? Cid) 
         {
             Cv? cv;
             try
             {
-                if (Cid.HasValue)//Om man klickade på ett cv i Index, följer ett Cid med via asp-route-Cid, men om man klickar på My Cv(har ej asp-route...) så körs else blocket, eftersom inget Cid följer med
+                if (Cid.HasValue)
                 {
 
                     cv = await _context.Cvs
@@ -110,7 +100,10 @@ namespace bla.Controllers
 
                     cv.UsersProjects = await GetProjectsUserHasParticipatedIn(cv.UserId!);
 
-                    var usersCv = await GetLoggedInUsersCvAsync();//Hämtar eget cv för att det ska användas för att jämföra om det är den inloggade användares cv
+                    //GetLoggedInUsersCvAsync är en metod som skapades då vårt cv innehåller properties av komplexa entiteter ,
+                    //vilket innebär att FindAsync inte räcker till, dem behöver istället inkluderas eftersom att FindAsync endast hämtar den rad som matchar id:t som anges som parameter
+                    //Så för att minska mängden repeterad kod så skrevs den, dock likt FindAsync kan den returnera null, vilket är varför null kontroller sker direkt efter den används
+                    var usersCv = await GetLoggedInUsersCvAsync();
                     ViewBag.NotLoggedInUsersCv = cv?.UserId != usersCv?.UserId; //bool för att gömma Delete på cvs som inte är den inloggade användaren
                     if (ViewBag.NotLoggedInUsersCv)
                     {
@@ -1318,7 +1311,10 @@ namespace bla.Controllers
         }
 
 
-        private async Task<Cv?> GetLoggedInUsersCvAsync() //Kan returnera null, och kan inte använda FindAsync, eftersom att entiteten håller komplexa objekt
+        //GetLoggedInUsersCvAsync är en metod som skapades då vårt Cv innehåller properties av komplexa entiteter ,
+        //vilket innebär att FindAsync inte räcker till, dem behöver istället inkluderas eftersom att FindAsync endast hämtar den rad som matchar id:t som anges som parameter
+        //Så för att minska mängden repeterad kod så skrevs den, dock likt FindAsync kan den returnera null, vilket är varför null kontroller sker direkt efter den används
+        private async Task<Cv?> GetLoggedInUsersCvAsync() 
         {
             if (!User.Identity!.IsAuthenticated)
                 return null;
@@ -1334,7 +1330,7 @@ namespace bla.Controllers
                     .Include(cv => cv.Interests)
                     .Include(cv => cv.OneUser)
                     .ThenInclude(oneUser => oneUser!.ProjectUsers)
-                    .FirstOrDefaultAsync(cv => cv.UserId == userId); //Kan göra cv till null ändå
+                    .FirstOrDefaultAsync(cv => cv.UserId == userId); 
 
             if (cv == null)
                 return null;
@@ -1343,19 +1339,9 @@ namespace bla.Controllers
 
             return cv;
         }
-        //private async Task<List<Project>> GetProjectsUserHasParticipatedIn(string userId)
-        //{
-        //    List<Project> projectList = await _context.ProjectUsers
-        //        .Where(pu => pu.UserId == userId)
-        //        .Join(
-        //        _context.Projects,
-        //        pu => pu.ProjId,
-        //        p => p.Pid,
-        //        (pu, p) => p)
-        //        .ToListAsync(); ;
-        //    return projectList;
-        //}
-        private async Task<List<Project>> GetProjectsUserHasParticipatedIn(string userId)//MED READCV!!!!!!!
+
+        //En helper metod som används för att läsa in varje projekt som användaren deltagit i och det ska hållas av en icke-mappad property för CvVM (Cv:ts view model)
+        private async Task<List<Project>> GetProjectsUserHasParticipatedIn(string userId)
         {
             var IsAuthenticated = User.Identity!.IsAuthenticated;
 

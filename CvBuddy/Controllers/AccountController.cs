@@ -25,14 +25,6 @@ namespace bla.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel lvm)
         {
-            
-
-            //if (_userManager.Users.Any(u => u.UserName != lvm.UserName))//validering har lagts till
-            //    ModelState.AddModelError(nameof(lvm.UserName), "Invalid user name.");
-           
-            //if (_userManager.Users.Any(u => u.PasswordHash != lvm.Password))
-            //    ModelState.AddModelError(nameof(lvm.Password), "Invalid password.");
-
             if (ModelState.IsValid)
             {
                 var result = await _signInManager.PasswordSignInAsync(
@@ -45,10 +37,9 @@ namespace bla.Controllers
                 else
                 {
                     ModelState.AddModelError("", "Username or password is incorrect.");
-                }
-                    
+                }  
             }
-
+            }
             return View(lvm);
         }
 

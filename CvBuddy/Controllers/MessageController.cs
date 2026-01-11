@@ -21,19 +21,17 @@ namespace bla.Controllers
         }
 
         [HttpGet]
-        public IActionResult SendMsg(string userId)//Får inte med userId till POST sedan, därför är modelstate invalid och reciever null
+        public IActionResult SendMsg(string userId)
         {
             MessageVM msg = new();
             msg.RecieverId = userId;
-            //ViewBag.WillEnterName = !User.Identity!.IsAuthenticated;
+
 
             return View(msg);
         }
         [HttpPost]
         public async Task<IActionResult> SendMsg(MessageVM msgVM)
         {
-            //ViewBag.WillEnterName = !User.Identity!.IsAuthenticated; 
-
             try
             {
                 if (!ModelState.IsValid)
@@ -64,21 +62,6 @@ namespace bla.Controllers
 
             
         }
-
-        //[HttpGet]
-        //[Authorize]
-        //public async Task<IActionResult> Messages()
-        //{
-        //    var userId = _userManager.GetUserId(User);
-        //    List<Message> msgList = await _context.Messages
-        //        .Where(m => m.RecieverId == userId)
-        //        .OrderByDescending(m => m.SendDate)
-        //        .ToListAsync();
-
-        //    ViewBag.HasMesseges = msgList.Count > 0;
-
-        //    return View(msgList);
-        //}
 
         [HttpGet]
         [Authorize]
@@ -117,9 +100,6 @@ namespace bla.Controllers
         {
             try
             {
-                //Message? oldState = await _context.Messages
-                //    .Where(m => m.Mid == mid).FirstOrDefaultAsync();
-
                 var oldState = await _context.Messages.FindAsync(mid);
 
                 oldState!.IsRead = message.IsRead;
@@ -142,8 +122,6 @@ namespace bla.Controllers
             
             try
             {
-                //var msg = await _context.Messages
-                //    .Where(m => m.Mid == mid).FirstOrDefaultAsync();
                 var msg = await _context.Messages
                     .FindAsync(mid);
 
@@ -208,19 +186,9 @@ namespace bla.Controllers
 
         [HttpGet]
         public async Task<IActionResult> DeleteMessage(MessageVM mVM)
-        {
-
-            //Undantagshantering ska göras för exceptionella situationer, det ska inte funka som en if sats för att fånga null värden här och var
-            //utan det ska hanteras med kontroller, alltså en if-sats. Och då skriver vi ut ett informativt felmeddelande som ska ses av användare.
-            //Exempelvis som här nedan, kontroller ska användas för att validera inputs(bortse från att int mid är ett routeat id). Hittas inte det som efterfrågas
-            //så meddelar vi användaren om det. Det är alltså FÖRVÄNTADE SCENARION. Men när det gäller undantagshantering så innebär det att
-            //att man ska fånga verkliga fel och ge begripliga och beskrivande felmeddelanden istället för att låta applikationen krascha
-
-            //Hitta meddelandet med mid
-            
+        {            
             try
             {
-
                 var message = await _context.Messages.FirstOrDefaultAsync(m => m.Mid == mVM.Mid);
 
                 if (message == null)
@@ -231,12 +199,6 @@ namespace bla.Controllers
 
                 //Savechangesasync
                 await _context.SaveChangesAsync();
-
-                //return RedirectToAction IEnumerable<Message> som tillhör användaren
-                //var userId = _userManager.GetUserId(User);
-                //List<Message> usersMessages = await _context.Messages.Where(m => m.RecieverId == mVM.RecieverId).ToListAsync();
-
-                //return RedirectToAction("Messages", usersMessages);
                 return RedirectToAction("Messages");
             }
             catch(DbUpdateException e)
