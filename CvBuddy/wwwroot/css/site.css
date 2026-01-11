@@ -137,8 +137,7 @@ select {
     flex: 1 0 auto;
     height: min-content;
     box-shadow: 0 6px 18px rgba(0, 0, 25, 0.25);
-    min-width: 0%;
-    max-width: 50%;
+    max-width: 100%;
 }
 
 .projects-in-profile-containers {

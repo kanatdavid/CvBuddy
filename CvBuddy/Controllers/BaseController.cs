@@ -28,16 +28,20 @@ namespace bla.Controllers
         //På så sätt slipper vi ha en GetReadCount viewbag i varje actionmetod i all controllers för att det ska synas i all views
         public override void OnActionExecuting(ActionExecutingContext context)
         {
-            if (User.Identity!.IsAuthenticated)
+            if (User.Identity?.IsAuthenticated == true)
             {
                 var userId = _userManager.GetUserId(User);
-                if(User == null)
+
+                if (!string.IsNullOrEmpty(userId))
                 {
-                    _signInManager.SignOutAsync(); 
-                }
-                ViewBag.NotReadCount = _context.Messages
+                    ViewBag.NotReadCount = _context.Messages
                     .Where(m => m.RecieverId == userId && !m.IsRead)
                     .Count();
+                }
+                else
+                {
+                    ViewBag.NotReadCount = 0;
+                }
             }
             else
             {

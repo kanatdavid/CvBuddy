@@ -47,16 +47,9 @@ namespace bla.Controllers
                 .Include(u => u.OneAddress)
                 .FirstOrDefaultAsync(u => u.Id == id);
 
-                //if (user == null)
-                //{
-                //    //return RedirectToAction("Login", "Account");
-
-                //    //David - jag la till detta, men ingen annan stans såg det bara när jag testade efter mina ändringar och jag kom till login när jag skulle ändra mina uppgifter
-                //    return NotFound("User could not be found.");
-                //}
-
                 if (user == null)
                     throw new NullReferenceException("User could not be found.");
+
                 var userVm = new UserViewModel
                 {
                     UserId = user.Id,
@@ -65,16 +58,19 @@ namespace bla.Controllers
                     LastName = user.LastName,
                     Email = user.Email,
                     PhoneNumber = user.PhoneNumber,
-                    AddressVm = user.OneAddress == null
-                    ? null
-                    : new AddressViewModel
-                    {
-                        Country = user.OneAddress.Country,
-                        City = user.OneAddress.City,
-                        Street = user.OneAddress.Street
-                    }
                 };
-                return View(userVm);
+
+                if(user.OneAddress != null)
+                {
+                    userVm.AddressVm = new AddressViewModel
+                    {
+                        Country = user.OneAddress?.Country,
+                        City = user.OneAddress?.City,
+                        Street = user.OneAddress?.Street
+                    };
+                }
+
+                    return View(userVm);
             }
             catch(NullReferenceException e)
             {
@@ -87,7 +83,15 @@ namespace bla.Controllers
 
         public async Task<IActionResult> UpdateUser(UserViewModel formUser)
         {
-            var user = await _userManager.GetUserAsync(User);
+
+
+            var userIdentity = User.Identity.IsAuthenticated;
+            var userIdentitya = User.Claims.Count();
+            
+            var userId = _userManager.GetUserId(User);
+            var user = await _context.Users
+                .Include(u => u.OneAddress)
+                .FirstOrDefaultAsync(u => u.Id == userId);
 
             try
             {
@@ -153,6 +157,7 @@ namespace bla.Controllers
                     }
                 }
                 await _context.SaveChangesAsync();
+                await _signInManager.RefreshSignInAsync(user);
                 return RedirectToAction("GetUser", "User");
                 //Identity bygger på säkerhet och token-baserade ändringar, microsoft tvingar oss att 
                 //använda metoder som identity klassen har, de används för att lagra de fält på rätt sätt
