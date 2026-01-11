@@ -6,7 +6,7 @@
 
 <form asp-action="DeleteCv" method="post" enctype="multipart/form-data">
 
-    <input type="hidden" asp-for="Cid" /> @* För att få med Cv:ts id så att det inte autoinkrementeras och hela databasen förstörs *@
+    <input type="hidden" asp-for="Cid" />
     <input type="hidden" asp-for="ReadCount" />
     <input type="hidden" asp-for="UserId" />
     <input type="hidden" asp-for="ImageFilePath" />
@@ -18,9 +18,8 @@
         <input type="hidden" asp-for="Experiences[i].Exid" />
         <input type="hidden" asp-for="Experiences[i].CvId" />
         <input asp-for="Experiences[i].Title" type="hidden" value="@Model.Experiences[i].Title" />
-        <input asp-for="Experiences[i].Description" type="hidden" value="@(Model.Experiences[i].Description ?? "")" />@* string som är nullable, kolla om dem får tom stäng automatiskt eller om dem behöver manuellt *@
-        <input asp-for="Experiences[i].Company" type="hidden" value="@Model.Experiences[i].Company" />
-        <input asp-for="Experiences[i].StartDate" type="hidden" value="@Model.Experiences[i].StartDate" /> @* DATE VALUE FUNKAR EJ *@   
+        <input asp-for="Experiences[i].Description" type="hidden" value="@(Model.Experiences[i].Description ?? "")" />
+        <input asp-for="Experiences[i].StartDate" type="hidden" value="@Model.Experiences[i].StartDate" /> 
         <input asp-for="Experiences[i].EndDate" type="hidden" value="@Model.Experiences[i].EndDate" />
     }
 
@@ -64,7 +63,7 @@
     @* Interest *@
     @for (int i = 0; i < Model.Interests.Count; i++)
     {
-        <input type="hidden" asp-for="Interests[i].InterestId" /> @* Måste finnas med för att dem ska finnas i Modelstate vid Post, syns ej i sidan *@
+        <input type="hidden" asp-for="Interests[i].InterestId" /> 
         <input type="hidden" asp-for="Interests[i].CvId" />
         <input asp-for="Interests[i].InterestName" type="hidden" value="@Model.Interests[i].InterestName" />
     }

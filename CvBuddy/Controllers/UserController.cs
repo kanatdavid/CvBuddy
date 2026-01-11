@@ -247,8 +247,7 @@ namespace bla.Controllers
                     return View(cp);
 
                 var user = await _userManager.GetUserAsync(User);
-                //if (user == null)
-                //    return RedirectToAction("Login", "Account");
+
                 if (user == null)
                     throw new NullReferenceException("User could was not found.");
 

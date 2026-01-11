@@ -33,7 +33,7 @@ namespace bla.Controllers
                 var userId = _userManager.GetUserId(User);
                 if(User == null)
                 {
-                    _signInManager.SignOutAsync(); //RADERA COOKIES FRÅN SENSAT INLOGGADE ANVÄNDARE EFTER ATT MAN LAGT TILL NY MIGRATIONS
+                    _signInManager.SignOutAsync(); 
                 }
                 ViewBag.NotReadCount = _context.Messages
                     .Where(m => m.RecieverId == userId && !m.IsRead)

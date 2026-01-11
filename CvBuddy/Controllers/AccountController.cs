@@ -39,7 +39,6 @@ namespace bla.Controllers
                     ModelState.AddModelError("", "Username or password is incorrect.");
                 }  
             }
-            }
             return View(lvm);
         }
 

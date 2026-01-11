@@ -11,7 +11,7 @@ namespace bla.DAL
         {
             
         }
-        public DbSet<User> Users { get; set; } //override för att kunna läggat till User entiteten
+        public DbSet<User> Users { get; set; } 
         public DbSet<Project> Projects { get; set; }
         public DbSet<Cv> Cvs { get; set; }
         public DbSet<Skill> Skills { get; set; }
@@ -47,8 +47,6 @@ namespace bla.DAL
                 .HasForeignKey(u => u.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-
-
             //user > Cv
             builder.Entity<User>()
                 .HasOne(p => p.OneCv)
@@ -57,22 +55,7 @@ namespace bla.DAL
                 .OnDelete(DeleteBehavior.Cascade);
 
             //Cv > Project (M-M via CvProject)
-            builder.Entity<CvProject>().HasKey(cp => new { cp.CvId, cp.ProjId });//CVProject har komposit PK(CvId, Pid)
-
-            //One Cv har många CvProjects
-            //builder.Entity<CvProject>()
-            //    .HasOne(cv => cv.OneCv)
-            //    .WithMany(cv => cv.CvProjects)
-            //    .HasForeignKey(cv => cv.CvId)
-            //    .OnDelete(DeleteBehavior.Cascade);
-
-            //One Project har många CvProjects
-            //builder.Entity<CvProject>()
-            //    .HasOne(p => p.OneProject)
-            //    .WithMany(p => p.CvProjects)
-            //    .HasForeignKey(p => p.ProjId)
-            //    .OnDelete(DeleteBehavior.Cascade);
-
+            builder.Entity<CvProject>().HasKey(cp => new { cp.CvId, cp.ProjId });
 
             //Cv > Skill 1:M
             builder.Entity<Skill>()
@@ -94,8 +77,6 @@ namespace bla.DAL
                 .WithOne(p => p.Education)
                 .HasForeignKey<Education>(p => p.CvId)
                 .OnDelete(DeleteBehavior.Cascade);
-
-
 
             //Cv > Certificate 1:M
             builder.Entity<Certificate>()

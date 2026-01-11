@@ -46,7 +46,8 @@ namespace bla.Controllers
                                                        //ska kunna komma till Profil sidan inte bara från en persons cv
                                                        //så är det inte garanterat att de har cv
 
-                if (ViewBag.HasOneCv)
+
+                if (ViewBag.HasOneCv)//Om användaren vars profilknapp man klickar på har ett cv, så visas en "Cv" rubrik i view, det cvt måste ha en av respektive delar för att den ska visas tillsammans med den delens rubrik och content
                 {
                     ViewBag.HasExperience = user.OneCv!.Experiences.Count() > 0;
                     ViewBag.HasHighSchool = user.OneCv!.Education?.HighSchool != null;
@@ -55,7 +56,7 @@ namespace bla.Controllers
                     ViewBag.HasCertificates = user.OneCv!.Certificates.Count() > 0;
                     ViewBag.HasInterests = user.OneCv!.Interests.Count() > 0;
                     ViewBag.HasPersonalCharacteristics = user.OneCv!.PersonalCharacteristics.Count() > 0;
-                    //Om använderen bara har en bild för sitt cv så syns en ensam rubrik, ta bort den med detta
+                    //Om använderen bara har en bild för sitt cv så syns en ensam rubrik("Cv" rubriken från ovanstående kommenta), ta bort den med detta
                     ViewBag.HasCvWithOnlyImage = false;
                     if (ViewBag.HasExperience ||
                         ViewBag.HasHighSchool ||

@@ -12,12 +12,15 @@ using bla.Model;
 using bla.Model.CvInfo;
 using bla.DAL;
 
+
+// ---->Längst nere finns förklaringar till det helper metoder som används här och anledningen till varför dem behöves. <----
+
+
 namespace bla.Controllers
 {
     public class CvInformationController : BaseController
     {
         public CvInformationController(UserManager<User> u, CVBuddyContext c, SignInManager<User> sm) : base(u, c, sm) { }
-
 
         //---------------------BuildCv------------------------------------------BuildCv---------------------
 
@@ -81,8 +84,9 @@ namespace bla.Controllers
             Cv? cv;
             try
             {
-                if (Cid.HasValue)
+                if (Cid.HasValue) 
                 {
+                    //Man hamnar här om man inte äger cv:t själv
 
                     cv = await _context.Cvs
                     .Include(cv => cv.Education)
@@ -100,42 +104,33 @@ namespace bla.Controllers
 
                     cv.UsersProjects = await GetProjectsUserHasParticipatedIn(cv.UserId!);
 
-                    //GetLoggedInUsersCvAsync är en metod som skapades då vårt cv innehåller properties av komplexa entiteter ,
-                    //vilket innebär att FindAsync inte räcker till, dem behöver istället inkluderas eftersom att FindAsync endast hämtar den rad som matchar id:t som anges som parameter
-                    //Så för att minska mängden repeterad kod så skrevs den, dock likt FindAsync kan den returnera null, vilket är varför null kontroller sker direkt efter den används
                     var usersCv = await GetLoggedInUsersCvAsync();
-                    ViewBag.NotLoggedInUsersCv = cv?.UserId != usersCv?.UserId; //bool för att gömma Delete på cvs som inte är den inloggade användaren
+                    ViewBag.NotLoggedInUsersCv = cv?.UserId != usersCv?.UserId;
                     if (ViewBag.NotLoggedInUsersCv)
                     {
-                        //Ingen transaktion behövd, Enskild Update-statements är atomära, sätter Row lock. Applikationen använder en lokal databas, alltså inga samtidiga updates kommer göras här. EJ ett problem
-                        await _context.Database.ExecuteSqlRawAsync("UPDATE Cvs SET ReadCount = ReadCount + 1 WHERE Cid = " + Cid); //Inkrementera ReadCount varje gång See Cv klickas
+                        await _context.Database.ExecuteSqlRawAsync("UPDATE Cvs SET ReadCount = ReadCount + 1 WHERE Cid = " + Cid); //Inkrementera ReadCount varje gång See Cv klickas 
                     }
                 }
-                else//I else hämtas den inloggade användarens Cv, för "My Cv"
+                else//I else hämtas den inloggade användarens Cv, för "My Cv" och där användaren klickar see cv på sitt eget cv
                 {
                     if (!User.Identity!.IsAuthenticated)
                     {
-                        return RedirectToAction("Login", "Account");//För att både inloggade och utloggade ska använder samma action metod
+                        return RedirectToAction("Login", "Account");//För att både inloggade och utloggade ska använda samma action metod för att see ett cv
                     }
                     else
                     {
                         cv = await GetLoggedInUsersCvAsync();
-                        //if (cv?.OneUser == null) <---- Var osäker på om OneUser va onödig att ha med här 
-                        //    throw new NullReferenceException(""); 
 
                         if (cv == null)
                                 return RedirectToAction("BuildCv");
-
-
                     }
 
                 }
 
                 ViewBag.HasSetPrivateProfile = cv?.OneUser!.HasPrivateProfile;
 
-                //För headlines om det finns något att visa under headlinen
+                //För headlines om det finns något att visa under headlinen till view
                 ViewBag.Headline = "Cv";
-
 
                 ViewBag.CvOwnerFullName = " - " + cv?.OneUser.GetFullName();
 
@@ -186,12 +181,6 @@ namespace bla.Controllers
                     ViewBag.HeadlineInterestSmall = "These are my interests";
                 }
 
-                //Projects
-                //if (cv?.CvProjects.Count > 0)
-                //{
-                //    ViewBag.HeadlineProjects = "Projects";
-                //    ViewBag.HeadlineProjectsSmall = "I have participated in these projects";
-                //}
                 if (cv?.UsersProjects.Count > 0)
                 {
                     ViewBag.HeadlineProjects = "Projects";
@@ -217,7 +206,6 @@ namespace bla.Controllers
         }
 
         //---------------------UpdateCv------------------------------------------UpdateCv---------------------
-
 
         [HttpGet]
         public async Task<IActionResult> UpdateCv()
@@ -256,9 +244,7 @@ namespace bla.Controllers
             }
         }
 
-
         //---------------------Image---------------------Image---------------------Image---------------------HÄÄÄÄR !!!!!!!!!!!!!!!!!!!!!!!
-
 
         [HttpGet]
         public async Task<IActionResult> UpdateImage()
@@ -280,26 +266,16 @@ namespace bla.Controllers
 
                 if (!ModelState.IsValid)
                 {
-                    //ModelState.AddModelError(nameof(cvVM.ImageFile), "Please upload an image");
-                    //foreach (var entry in ModelState)
-                    //{
-                    //    Console.WriteLine($"FIELD: {entry.Key}");
-                    //    Console.WriteLine($"  AttemptedValue: {entry.Value.AttemptedValue}");
 
-                    //    foreach (var error in entry.Value.Errors)
-                    //    {
-                    //        Console.WriteLine($"  ❌ {error.ErrorMessage}");
-                    //    }
-                    //}
                     return View("UpdateCv", await UsersCvToCvVM());//UsersCvToCvVM() eftersom att cvVMs properties är null
                                                                    //Så vi måste returnera ett cvVM med värden för att förse
-                                                                   //UpdateCv view model med värden
+                                                                   //UpdateCv view med värden igen
                 }
 
                 var uploadeFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "CvImages");
                 Directory.CreateDirectory(uploadeFolder);
 
-                var ext = Path.GetExtension(cvVM.ImageFile!.FileName);//null
+                var ext = Path.GetExtension(cvVM.ImageFile!.FileName);
 
                 var fileName = Guid.NewGuid().ToString() + ext;
 
@@ -341,24 +317,19 @@ namespace bla.Controllers
 
         //---------------------DeleteCv------------------------------------------DeleteCv---------------------
 
-
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> DeleteCv(int Cid)
+        public async Task<IActionResult> DeleteCv()
         {
 
             ViewBag.Headline = "Delete Cv";
             ViewBag.WarningMessage = "Are you sure you wan't to delete your Cv? This will permanently delete your Cv but" +
-                ", none of the projects you created will be automatically connected to your new Cvs. You will have to find them and participate in them again"; //I felmeddelandet visas vad planen för projekten är
-            //Cv cv = _context.Cvs.Find(Cid); //Ska inte använda Find för att annars får man inte med relaterade rader till Cv!!!!!!
+                ", none of the projects you created will be automatically connected to your new Cvs. You will have to find them and participate in them again";
             Cv? cv = await GetLoggedInUsersCvAsync();
-
-
             return View(cv);
         }
 
         [HttpPost]
-
         public async Task<IActionResult> DeleteCv(Cv cv)
         {
             try
@@ -385,28 +356,16 @@ namespace bla.Controllers
 
         //---------------------Education------------------------------------------Education---------------------
 
-
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> AddEducation(int eid)//GLÖM EJ KNAPPAR BORT NÄR MAN SKAPOAR CV
+        public async Task<IActionResult> AddEducation(int eid)
         {
-
-            //Om model som håller properties med komplexa objekt, Include + FirstOrDefaultAsync + null check
-            //Om model med ej komplexa objekt som properties, FindAsync + null ckeck
-
-            //FINNS INGEN DBSET FÖR EDUCATION
-            //var edu = await _context.Education.FindAsync(eid); Annars ska detta funka
-            /*var cv = await _context.Cvs.FindAsync(eid);*/ //Funkar ej, cv håller komplexa objekt
             try
             {
-                //var cv = await GetLoggedInUsersCvAsync();//Funkar och är korrekt, metoden anvnder Include + FirstOrDefaultAsync och null ckeck görs här
-
                 var education = await _context.Education.FindAsync(eid);
 
                 if (education == null)
                     throw new NullReferenceException("No Cv was found");
-
-                //var edu = cv.Education;
 
                 EducationVM eduVM = new EducationVM
                 {
@@ -429,9 +388,7 @@ namespace bla.Controllers
             catch (Exception e)
             {
                 return View("Error", new ErrorViewModel { ErrorMessage = "There was an unexpected error processing your request." });
-
             }
-
         }
 
         [HttpPost]
@@ -525,17 +482,6 @@ namespace bla.Controllers
 
             try
             {
-                //var userCv = await GetLoggedInUsersCvAsync();
-
-                //if (userCv == null)
-                //    throw new NullReferenceException("Users Cv could not be found.");
-
-                //var certificate = userCv.Certificates.FirstOrDefault(c => c.CertId == certId);
-                //if (certificate == null)
-                //{
-                //    return RedirectToAction("Index", "Home");
-                //}
-
                 var certificate = await _context.Certificates.FindAsync(certId);
                 if (certificate == null)
                     throw new NullReferenceException("Certificate could not be found.");
@@ -555,7 +501,6 @@ namespace bla.Controllers
             {
                 return View("Error", new ErrorViewModel { ErrorMessage = "Unexpected error while trying to process your request." });
             }
-
         }
 
         [HttpPost]
@@ -597,17 +542,8 @@ namespace bla.Controllers
         [HttpGet]
         public async Task<IActionResult> DeleteCertificate(int certId)
         {
-
-
             try
             {
-                //var userCv = await GetLoggedInUsersCvAsync();
-
-                //if (userCv == null)
-                //    throw new NullReferenceException("Users Cv could not be found.");
-
-                //var certificate = userCv.Certificates.FirstOrDefault(c => c.CertId == certId);
-
                 var certificate = await _context.Certificates.FindAsync(certId);
 
                 if (certificate == null)
@@ -629,8 +565,6 @@ namespace bla.Controllers
             {
                 return View("Error", new ErrorViewModel { ErrorMessage = "Unexpected error while trying to process your request." });
             }
-
-
         }
 
 
@@ -652,7 +586,6 @@ namespace bla.Controllers
 
             try
             {
-
                 PersonalCharacteristic persChar = new PersonalCharacteristic
                 {
                     CharacteristicName = pvm.CharacteristicName
@@ -686,14 +619,6 @@ namespace bla.Controllers
         {
             try
             {
-
-                //var userCv = await GetLoggedInUsersCvAsync();
-
-                //if (userCv == null)
-                //    throw new NullReferenceException("Users Cv could not be found.");
-
-                //var personalCharacteristic = userCv.PersonalCharacteristics.FirstOrDefault(c => c.PCId == pcId);
-
                 var personalCharacteristic = await _context.PersonalCharacteristics.FindAsync(pcId);
 
                 if (personalCharacteristic == null)
@@ -739,11 +664,6 @@ namespace bla.Controllers
                 personalCharacteristic.CharacteristicName = pvm.CharacteristicName;
                 await _context.SaveChangesAsync();
 
-                //if (personalCharacteristic != null)
-                //{
-                //    personalCharacteristic.CharacteristicName = pvm.CharacteristicName;
-                //    await _context.SaveChangesAsync();
-                //}
                 return View("UpdateCv", await UsersCvToCvVM());
             }
             catch (DbUpdateException e)
@@ -758,22 +678,13 @@ namespace bla.Controllers
             {
                 return View("Error", new ErrorViewModel { ErrorMessage = "Unexpected error while trying to process your request." });
             }
-
-
         }
-
 
         [HttpGet]
         public async Task<IActionResult> DeletePersonalCharacteristic(int pcId)
         {
             try
             {
-                //var userCv = await GetLoggedInUsersCvAsync();
-
-                //if (userCv == null)
-                //    throw new NullReferenceException("Users Cv could not be found.");
-
-                //var personalCharacteristic = userCv.PersonalCharacteristics.FirstOrDefault(c => c.PCId == pcId);
                 var personalCharacteristic = await _context.PersonalCharacteristics.FindAsync(pcId);
 
                 if (personalCharacteristic == null)
@@ -815,7 +726,6 @@ namespace bla.Controllers
             if (!ModelState.IsValid)
                 return View(evm);
 
-
             try
             {
                 Experience exp = new Experience
@@ -854,13 +764,6 @@ namespace bla.Controllers
         {
             try
             {
-                //var cv = await GetLoggedInUsersCvAsync();
-
-                //if (cv == null)
-                //    throw new NullReferenceException("Users Cv could not be found.");
-
-                //var experience = cv.Experiences.FirstOrDefault(e => e.Exid == exid);
-
                 var experience = await _context.Experiences.FindAsync(exid);
 
                 if (experience == null)
@@ -939,13 +842,6 @@ namespace bla.Controllers
         {
             try
             {
-                //var cv = await GetLoggedInUsersCvAsync();
-
-                //if (cv == null)
-                //    throw new NullReferenceException("Users Cv could not be found.");
-
-                //var experience = cv.Experiences.FirstOrDefault(e => e.Exid == exid);
-
                 var experience = await _context.Experiences.FindAsync(exid);
 
                 if (experience == null)
@@ -969,7 +865,6 @@ namespace bla.Controllers
             }
 
         }
-
 
         //---------------------Skill------------------------------------------Skill---------------------
 
@@ -1023,13 +918,6 @@ namespace bla.Controllers
         {
             try
             {
-                //var cv = await GetLoggedInUsersCvAsync();
-
-                //if (cv == null)
-                //    throw new NullReferenceException("Users Cv could not be found.");
-
-                //var skill = cv.Skills.FirstOrDefault(s => s.Sid == sid);
-
                 var skill = await _context.Skills.FindAsync(sid);
 
                 if (skill == null)
@@ -1052,7 +940,6 @@ namespace bla.Controllers
             {
                 return View("Error", new ErrorViewModel { ErrorMessage = "There was an internal error trying to update skill, changes could not be saved." });
             }
-
         }
 
         [HttpPost]
@@ -1092,7 +979,6 @@ namespace bla.Controllers
             {
                 return View("Error", new ErrorViewModel { ErrorMessage = "There was an internal error trying to update skill, changes could not be saved." });
             }
-
         }
 
         [HttpGet]
@@ -1100,13 +986,6 @@ namespace bla.Controllers
         {
             try
             {
-                //var cv = await GetLoggedInUsersCvAsync();
-
-                //if (cv == null)
-                //    throw new NullReferenceException("Users Cv could not be found.");
-
-                //var skill = cv.Skills.FirstOrDefault(e => e.Sid == sid);
-
                 var skill = await _context.Skills.FindAsync(sid);
 
                 if (skill == null)
@@ -1129,9 +1008,7 @@ namespace bla.Controllers
             }
         }
 
-
         //---------------------Interest------------------------------------------Interest---------------------
-
 
         [HttpGet]
         public async Task<IActionResult> AddInterest()
@@ -1180,13 +1057,6 @@ namespace bla.Controllers
         {
             try
             {
-                //var cv = await GetLoggedInUsersCvAsync();
-
-                //if (cv == null)
-                //    throw new NullReferenceException("Users Cv could not be found.");
-
-                //var interest = cv.Interests.FirstOrDefault(i => i.InterestId == interestId);
-
                 var interest = await _context.Interests.FindAsync(interestId);
 
                 if (interest == null)
@@ -1254,15 +1124,6 @@ namespace bla.Controllers
         {
             try
             {
-                //var cv = await GetLoggedInUsersCvAsync();
-
-                //if (cv == null)
-                //    throw new NullReferenceException("Users Cv could not be found.");
-
-                //var interest = cv.Interests.FirstOrDefault(i => i.InterestId == interestId);
-                ////var cv = await GetLoggedInUsersCvAsync();
-                ////var interest = cv.Interests.FirstOrDefault(i => i.InterestId == interestId);
-
                 var interest = await _context.Interests.FindAsync(interestId);
 
                 if (interest == null)
@@ -1288,6 +1149,7 @@ namespace bla.Controllers
 
         //--------------------PRIVATE HELPERS---------------------------------------------------
 
+        //För att miska repeterad kod så skapades denna metod för att konvertera ett cv till sin verision av view model innan den visas i view
         private async Task<CvVM> UsersCvToCvVM()
         {
             var cv = await GetLoggedInUsersCvAsync();
@@ -1340,7 +1202,8 @@ namespace bla.Controllers
             return cv;
         }
 
-        //En helper metod som används för att läsa in varje projekt som användaren deltagit i och det ska hållas av en icke-mappad property för CvVM (Cv:ts view model)
+        //En helper metod som används för att läsa in varje projekt som användaren deltagit i och det ska hållas av en icke-mappad property för CvVM (Cv:ts view model),
+        //dock finns ställen där den behövts användas på andra sätt som i ReadCv i if satsens true block, vilket är där man hamnar om man ska läsa ett cv men inte äger cvt själv
         private async Task<List<Project>> GetProjectsUserHasParticipatedIn(string userId)
         {
             var IsAuthenticated = User.Identity!.IsAuthenticated;
@@ -1356,21 +1219,26 @@ namespace bla.Controllers
 
             return projectList;
         }
+
+        //Denna helper metod raderar den bilden i mappen CvImages i wwroot, när vi raderar ett cv och uppdaterar cv:ts bild
         private void DeleteOldImageLocally(Cv cvOld)
         {
             string[]? cvOldFileImageNameArray = null;
-            if (cvOld.ImageFilePath != null)
+            if (cvOld.ImageFilePath != null) //motverka krasch, ett cv ska aldrig inte ha en bild
             {
-                cvOldFileImageNameArray = cvOld.ImageFilePath.Split("/");
+                cvOldFileImageNameArray = cvOld.ImageFilePath.Split("/"); //Dela uppa ImageFilePath(Hela sökvägen till bilden inklusive namn och extension)
 
-                if (cvOldFileImageNameArray.Length != 0)
+                if (cvOldFileImageNameArray.Length != 0)//har det tilldelats en faktisk sökväg(kunde vi dela upp den på snedstäck)
                 {
 
-                    string oldCvFileName = cvOldFileImageNameArray[cvOldFileImageNameArray.Length - 1];
+                    string oldCvFileName = cvOldFileImageNameArray[cvOldFileImageNameArray.Length - 1]; //välj slutet på sökvägen, bildnamn + extension
 
-                    string finalCvFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "CvImages", oldCvFileName);
+                    string finalCvFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "CvImages", oldCvFileName); //sätt ihop sökvägen igen som den kom in. 
 
-                    if (!System.IO.File.Exists(finalCvFilePath))
+                    if (!System.IO.File.Exists(finalCvFilePath))//leta efter den bilden på den sökvägen, hittas den inte så vill vi kasta en exception manuellt. 
+                        //Det valdes att kastas en argument exception eftersom att det ska kastas när ett värde som ges till en metod som parameter inte är valid,
+                        //Om den kastas så innebär det troligen att bilken har flyttats på. Vilket skulle innebära att sökvägen inte är valid längre.
+                        //I ReadCv och UpdateImage fångar då denna exception och returnerar en view med en ErrorViewModel som visa meddelandet nedan med den sökvägen som Exists letade på.
                         throw new ArgumentException("The old image could not be deleted since it was not found. " +
                             "Attempted too look for it at: " + finalCvFilePath + " Did you move it?");
 

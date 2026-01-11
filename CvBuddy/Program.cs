@@ -12,8 +12,7 @@ builder.Services.AddControllersWithViews();
 
 
 builder.Services.AddDbContext<CVBuddyContext>(options =>
-            options.UseSqlServer(builder.Configuration.GetConnectionString("StoreContextConnectionString"))
-            );
+            options.UseSqlServer(builder.Configuration.GetConnectionString("StoreContextConnectionString")));
 
 builder.Services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<CVBuddyContext>().AddDefaultTokenProviders();
 
@@ -41,6 +40,5 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
-
 
 app.Run();

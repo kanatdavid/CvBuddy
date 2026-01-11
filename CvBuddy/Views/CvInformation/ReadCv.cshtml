@@ -4,7 +4,7 @@
 
 @* Styla snyggt  *@
 <div class="d-flex flex-row justify-content-center gap-4">
-    @if (ViewBag.NotLoggedInUsersCv != true) @* bolean uttrycket använder inte !bool för att det är inte ett uttryck tydligen så jag körde bool != true *@
+    @if (ViewBag.NotLoggedInUsersCv != true) 
     {
         <a asp-controller="CvInformation" asp-action="UpdateCv" class="btn btn-primary"><i class="fa-solid fa-pencil"></i> Update cv</a>
 
@@ -13,11 +13,6 @@
     <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary"><i class="fa-solid fa-house"></i> Home</a>
     
 </div>
-
-
-
-
-
 
 <div class="d-flex justify-content-center align-content-center min-vh-90">
     <div class="col-md-6 col-lg-10">
@@ -154,18 +149,6 @@
                         <p class="mb-0">Title: @project.Title</p>
                         <p class="mb-0">Description: @(project.Description ?? "Not described")</p>
                         <p class="mb-0">Date: @project.StartDate.ToShortDateString() <b>-</b> @(project.Enddate?.ToShortDateString() ?? "Ongoing")</p>
-                        @* @if (project.ProjectUsers.Count > 0)
-                {
-                    <p class="mb-0">
-                        Participants:
-                        @foreach (var participant in project.UsersInProject)
-                        {
-                            @project.UsersInProject.Count
-                            <ul><li>@participant.FirstName @participant.LastName</li></ul>
-                        }
-                    </p>
-                } *@
-
                     </div>
                 }
             </div>

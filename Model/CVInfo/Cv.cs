@@ -9,29 +9,19 @@ namespace bla.Model.CvInfo
 {
     public class Cv
     {
-
-        //Tydligen sp ska de saker som inte är nullable markeras som Required,
-        //eftersom att Mvc tolkar det som required men det inte riktigt är
-        //det viket innebär att Modelstate kan bli ogiltigt invalid
-
-        //Btw ändrade ImageFile till nullable efter detta
         [Key]
         public int Cid { get; set; }
 
-        //Nullable kommentarer för att annars kan inte ett cv skapas utan respektive egenskap, därmed db får falsk data om inte kan lämnas tomt
-        public List<Skill> Skills { get; set; } = new(); //Objekt i List borde vara nullable
+        public List<Skill> Skills { get; set; } = new(); 
 
 
-        public Education Education { get; set; } //Borde vara nullable
+        public Education Education { get; set; }
 
-        public List<Experience> Experiences { get; set; } = new(); //Objekt i List borde vara nullable
+        public List<Experience> Experiences { get; set; } = new(); 
 
-        public List<Certificate> Certificates{ get; set; } = new();//Objekt i List borde vara nullable
+        public List<Certificate> Certificates{ get; set; } = new();
 
-        public List<PersonalCharacteristic> PersonalCharacteristics{ get; set; } = new();//Objekt i List borde vara nullable
-
-
-        //----------------------------------------------------------------------------------------------------------------------------public bool IsPrivate { get; set; }
+        public List<PersonalCharacteristic> PersonalCharacteristics{ get; set; } = new();
 
         public DateTime PublishDate { get; set; } = DateTime.Now;
 
@@ -41,12 +31,12 @@ namespace bla.Model.CvInfo
         public string? ImageFilePath { get; set; } = "pic.png";
 
         [NotMapped]
-        public IFormFile? ImageFile { get; set; } //Borde vara nullable
+        public IFormFile? ImageFile { get; set; }
         public int ReadCount { get; set; }
-        public string? UserId { get; set; } //Vart null
+        public string? UserId { get; set; } 
 
         [ForeignKey(nameof(UserId))]
-        public User? OneUser { get; set; } //varför nullable, ett cv måste ha en ägare
+        public User? OneUser { get; set; } 
 
 
         [NotMapped]

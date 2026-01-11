@@ -19,6 +19,6 @@ namespace bla.Model
 
         [ForeignKey(nameof(RecieverId))]
         public string RecieverId { get; set; }
-        public User Reciever { get; set; }//nullable för att testa om modelstate inte blir invalid till SendMessage POST
+        public User Reciever { get; set; }
     }
 }

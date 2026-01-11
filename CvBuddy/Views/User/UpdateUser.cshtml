@@ -2,9 +2,7 @@
 
 <form method="post" asp-action="UpdateUser">
 
-    @Html.AntiForgeryToken()                    @* skyddar mot csrf attack, webbplats users webbläsare skicka begäran till din server(tex formulär),  @
-                                                @ eftersom user är inloggat tror server att begäran är legitim, då kan angriparen ändra dina uppgifter @
-    <input type="hidden" asp-for="UserId" />    @ skapar gömd fält med users id, som binder fältet till UserId i UserViewModel *@
+    <input type="hidden" asp-for="UserId" />   
 
     <h2>Edit your personal information</h2>
     <h3>Login information</h3>
