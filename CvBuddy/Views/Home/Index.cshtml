@@ -10,12 +10,6 @@
 <AuthorizeView>
     <Authorized>
             <h2>Welcome @User.Identity!.Name</h2>
-
-            @if (ViewBag.HasCv)
-                
-                
-
-                }
             @if(User.Identity.IsAuthenticated)
             {
                 @if (ViewBag.HasCv != true)
@@ -83,7 +77,7 @@
 {
     @foreach (var project in Model.ProjectList)//Loopar igenom varje projekt
     {
-        <div class="min-vh-80 read-banner">
+        <div class="min-vh-80 read-banner with-long-text">
             <div class="row">
                 <div class="col-12 text-center">
                     <p><strong>Title : </strong>@project.Project.Title</p>

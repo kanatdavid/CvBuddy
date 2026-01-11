@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace bla.Model
@@ -15,6 +16,7 @@ namespace bla.Model
         [StringLength(200, MinimumLength = 3, ErrorMessage = "Description can be 3-200 characters long")]
         public string? Description { get; set; }
 
+        [DisplayName("Start Date")]
         [Required(ErrorMessage = "Please choose projects start date")]
         [DataType(DataType.Date)]
         [Range(typeof(DateTime), "1900-01-01", "2049-12-31", ErrorMessage = "Date can only be after year 1900 and before year 2050.")]

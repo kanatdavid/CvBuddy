@@ -82,71 +82,11 @@ namespace bla.Controllers
             }
         }
 
-        //[HttpPost]
-        //public async Task<IActionResult> UpdateUser(User formUser)
-        //{
-        //    var user = await _userManager.Users
-        //        .Include(u => u.OneAddress)
-        //        .FirstOrDefaultAsync(u => u.Id == formUser.Id);
-        //    if (user == null)
-        //    {
-        //        return RedirectToAction("Login", "Account");
-        //    }
-
-        //    user.FirstName = formUser.FirstName;
-        //    user.LastName = formUser.LastName;
-
-        //    if (formUser.Email != user.Email)
-        //    {
-        //        var token = await _userManager.GenerateChangeEmailTokenAsync(user, formUser.Email);
-        //        var emailResult = await _userManager.ChangeEmailAsync(user, formUser.Email, token);
-        //        if (!emailResult.Succeeded)
-        //        {
-        //            ModelState.AddModelError("", "Could not update email");
-        //            return View(formUser);
-        //        }
-        //    }
-
-        //    if (formUser.PhoneNumber != user.PhoneNumber)
-        //    {
-        //        await _userManager.SetPhoneNumberAsync(user, formUser.PhoneNumber);
-
-        //    }
-        //    await _context.SaveChangesAsync();
-
-        //    if (formUser.OneAddress != null)
-        //    {
-        //        if (user.OneAddress == null)
-        //        {
-        //            user.OneAddress = new Address
-        //            {
-        //                Country = formUser.OneAddress.Country,
-        //                City = formUser.OneAddress.City,
-        //                Street = formUser.OneAddress.Street,
-        //                UserId = user.Id
-        //            };
-        //            await _context.Addresses.AddAsync(user.OneAddress);//fick null
-        //        }
-        //        else
-        //        {
-        //            user.OneAddress.Country = formUser.OneAddress.Country;
-        //            user.OneAddress.City = formUser.OneAddress.City;
-        //            user.OneAddress.Street = formUser.OneAddress.Street;
-        //            await _context.SaveChangesAsync();
-        //        }
-        //    }
-
-        //    return RedirectToAction("GetUser", "User");
-        //    //Identity bygger på säkerhet och token-baserade ändringar, microsoft tvingar oss att 
-        //    //använda metoder som identity klassen har, de används för att lagra de fält på rätt sätt
-        //    //med security stamp, unikhet, trigga rätt event osv
-        //}
 
         [HttpPost]
-        //[ValidateAntiForgeryToken]
+
         public async Task<IActionResult> UpdateUser(UserViewModel formUser)
         {
-            //var user = await _context.Users.Include(u => u.OneAddress).FirstOrDefaultAsync(u => u.Id == formUser.UserId);
             var user = await _userManager.GetUserAsync(User);
 
             try
@@ -235,7 +175,7 @@ namespace bla.Controllers
         [Authorize]
         public IActionResult ChangePassword()
         {
-            return View();
+            return View(new ChangePassword());
         }
 
         [HttpPost]
@@ -243,13 +183,14 @@ namespace bla.Controllers
         {
             try
             {
+
                 if (!ModelState.IsValid)
                     return View(cp);
 
                 var user = await _userManager.GetUserAsync(User);
 
                 if (user == null)
-                    throw new NullReferenceException("User could was not found.");
+                    throw new NullReferenceException("User could not be found.");
 
                 var result = await _userManager.ChangePasswordAsync(user, cp.CurrentPassword, cp.NewPassword);
 

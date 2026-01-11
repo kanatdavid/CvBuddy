@@ -9,8 +9,8 @@ namespace bla.Model.CvInfo
         public int Sid { get; set; }
 
         [DisplayName("Skill name")]
-
-        [Required(ErrorMessage = "You need to enter what the skill is.")] 
+        [Required(ErrorMessage = "You need to enter what the skill is.")]
+        [StringLength(90)]
         public string ASkill { get; set; }
 
         [StringLength(90)]

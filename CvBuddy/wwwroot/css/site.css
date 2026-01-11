@@ -68,7 +68,7 @@ select {
 
 .cv-container {
     border: 1px solid #e5e7eb;
-    border-radius: 12px;
+    border-radius: 2em;
     background-color: #fff;
     transition: box-shadow 0.2s ease;
     min-width: 20vh;
@@ -87,7 +87,7 @@ select {
 .read-banner {
     display: flex;
     border: 2px solid #72acf2;
-    border-radius: 0 2em 2em 0;
+    border-radius: 2em;
     background-color: #36045c;
     color: aliceblue;
     padding: 1em;
@@ -110,7 +110,10 @@ select {
     border: 2px solid black;
     border-radius: 2em;
     background-color: #7abfeb;
+    overflow-wrap: break-word;
+    word-break: break-all;
 }
+
 
 .notification-container {
     color: #f2f2f2;
@@ -134,6 +137,8 @@ select {
     flex: 1 0 auto;
     height: min-content;
     box-shadow: 0 6px 18px rgba(0, 0, 25, 0.25);
+    min-width: 0%;
+    max-width: 50%;
 }
 
 .projects-in-profile-containers {
@@ -143,5 +148,9 @@ select {
     border: 1px solid white;
 }
 
+.with-long-text {
+    overflow-wrap: break-word;
+    word-break: break-all;
+}
 
 

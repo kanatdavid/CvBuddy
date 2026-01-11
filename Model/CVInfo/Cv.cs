@@ -14,7 +14,6 @@ namespace bla.Model.CvInfo
 
         public List<Skill> Skills { get; set; } = new(); 
 
-
         public Education Education { get; set; }
 
         public List<Experience> Experiences { get; set; } = new(); 

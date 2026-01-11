@@ -15,7 +15,8 @@ namespace bla.Model.CvInfo
         [StringLength(120)]
         public string? Description { get; set; }
 
-        [Required(ErrorMessage = "Don't leave company field empty, if it was a freelance experience enter ''Freelance''.")] 
+        [Required(ErrorMessage = "Don't leave company field empty, if it was a freelance experience enter ''Freelance''.")]
+        [StringLength(65)]
         public string Company { get; set; } = "";
 
         [DisplayName("Start Date")]

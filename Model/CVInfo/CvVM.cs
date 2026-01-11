@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Http;
 
@@ -26,6 +27,7 @@ namespace bla.Model.CvInfo
         public string? ImageFilePath { get; set; } = "pic.png";
 
         [NotMapped]
+        [DisplayName("Image file")]
         [Required(ErrorMessage = "Upload an image please.")]
         [ExtensionValidation("jpg,png,jfif,webp")]
         public IFormFile? ImageFile { get; set; }

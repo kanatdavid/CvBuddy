@@ -120,7 +120,7 @@
                                 </ul>
                             </div>
                         }
-                        @if (ViewBag.HasPersonalCharacteristics)
+ @*                        @if (ViewBag.HasPersonalCharacteristics)
                         {
                             <div class="content-item">
                                 <h2>Personal Characteristics</h2>
@@ -136,7 +136,7 @@
 
                                 </div>
                             </div>
-                        }
+                        } *@
                     </div>
                     <div>
                         @if (ViewBag.HasPersonalCharacteristics)
@@ -161,10 +161,10 @@
             @if (ViewBag.HasJoinedProjects)
             {
                 <div id="project-in-profile">
-                    <h2 class="d-flex">Projects</h2>
+                    <h2>Projects</h2>
                     @foreach (var project in Model.Projects)
                     {
-                        <div class="mb-2 projects-in-profile-containers">
+                        <div class="mb-2 projects-in-profile-containers with-long-text">
                             <h5 class="mb-2">@project.Project.Title</h5>
                             <p class="mb-1">Description: @(project.Project.Description ?? "")</p>
                             <p class="mb-1">Start date: @project.Project.StartDate.ToShortDateString()</p>
