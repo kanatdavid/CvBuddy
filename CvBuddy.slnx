@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="CvBuddy/CvBuddy.csproj" />
+  <Project Path="DAL/DAL.csproj" />
+  <Project Path="Model/Model.csproj" />
+</Solution>

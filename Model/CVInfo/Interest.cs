@@ -1,0 +1,17 @@
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace bla.Model.CvInfo
+{
+    public class Interest
+    {
+        [Key]
+        public int InterestId { get; set; }
+
+        public string InterestName { get; set; }
+
+        public int CvId { get; set; }
+        [ForeignKey(nameof(CvId))]
+        public Cv? Cv { get; set; }
+    }
+}
