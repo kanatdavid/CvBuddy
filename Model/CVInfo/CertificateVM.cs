@@ -7,6 +7,7 @@ namespace bla.Model.CvInfo
     public class CertificateVM
     {
         public int CertId { get; set; }
+
         [DisplayName("Certificate name")]
         [Required(ErrorMessage = "An added certificate cannot be left empty.")]
         [StringLength(90, MinimumLength = 2)]
