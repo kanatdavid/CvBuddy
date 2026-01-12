@@ -19,7 +19,6 @@ namespace bla.DAL
         public DbSet<Certificate> Certificates { get; set; }
         public DbSet<PersonalCharacteristic> PersonalCharacteristics { get; set; }
         public DbSet<Interest> Interests { get; set; }
-        public DbSet<CvProject> CvProjects { get; set; }
         public DbSet<ProjectUser> ProjectUsers { get; set; }
         public DbSet<Address> Addresses { get; set; }
         public DbSet<Message> Messages { get; set; }
@@ -53,9 +52,6 @@ namespace bla.DAL
                 .WithOne(p => p.OneUser)
                 .HasForeignKey<Cv>(c => c.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
-
-            //Cv > Project (M-M via CvProject)
-            builder.Entity<CvProject>().HasKey(cp => new { cp.CvId, cp.ProjId });
 
             //Cv > Skill 1:M
             builder.Entity<Skill>()

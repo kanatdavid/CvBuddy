@@ -277,7 +277,7 @@ namespace DAL.Migrations
                 {
                     CertId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    CertName = table.Column<string>(type: "nvarchar(90)", maxLength: 90, nullable: false),
+                    CertName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CvId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -288,30 +288,6 @@ namespace DAL.Migrations
                         column: x => x.CvId,
                         principalTable: "Cvs",
                         principalColumn: "Cid",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "CvProjects",
-                columns: table => new
-                {
-                    CvId = table.Column<int>(type: "int", nullable: false),
-                    ProjId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_CvProjects", x => new { x.CvId, x.ProjId });
-                    table.ForeignKey(
-                        name: "FK_CvProjects_Cvs_CvId",
-                        column: x => x.CvId,
-                        principalTable: "Cvs",
-                        principalColumn: "Cid",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_CvProjects_Projects_ProjId",
-                        column: x => x.ProjId,
-                        principalTable: "Projects",
-                        principalColumn: "Pid",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -410,8 +386,8 @@ namespace DAL.Migrations
                 {
                     Sid = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ASkill = table.Column<string>(type: "nvarchar(90)", maxLength: 90, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(90)", maxLength: 90, nullable: true),
+                    ASkill = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Date = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CvId = table.Column<int>(type: "int", nullable: false)
                 },
@@ -475,11 +451,6 @@ namespace DAL.Migrations
                 name: "IX_Certificates_CvId",
                 table: "Certificates",
                 column: "CvId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_CvProjects_ProjId",
-                table: "CvProjects",
-                column: "ProjId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Cvs_UserId",
@@ -554,9 +525,6 @@ namespace DAL.Migrations
 
             migrationBuilder.DropTable(
                 name: "Certificates");
-
-            migrationBuilder.DropTable(
-                name: "CvProjects");
 
             migrationBuilder.DropTable(
                 name: "Education");

@@ -12,7 +12,7 @@ using bla.DAL;
 namespace DAL.Migrations
 {
     [DbContext(typeof(CVBuddyContext))]
-    [Migration("20260111184017_init")]
+    [Migration("20260112140338_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -197,8 +197,7 @@ namespace DAL.Migrations
 
                     b.Property<string>("CertName")
                         .IsRequired()
-                        .HasMaxLength(90)
-                        .HasColumnType("nvarchar(90)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("CvId")
                         .HasColumnType("int");
@@ -365,8 +364,7 @@ namespace DAL.Migrations
 
                     b.Property<string>("ASkill")
                         .IsRequired()
-                        .HasMaxLength(90)
-                        .HasColumnType("nvarchar(90)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("CvId")
                         .HasColumnType("int");
@@ -375,29 +373,13 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
-                        .HasMaxLength(90)
-                        .HasColumnType("nvarchar(90)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Sid");
 
                     b.HasIndex("CvId");
 
                     b.ToTable("Skills");
-                });
-
-            modelBuilder.Entity("bla.Model.CvProject", b =>
-                {
-                    b.Property<int>("CvId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProjId")
-                        .HasColumnType("int");
-
-                    b.HasKey("CvId", "ProjId");
-
-                    b.HasIndex("ProjId");
-
-                    b.ToTable("CvProjects");
                 });
 
             modelBuilder.Entity("bla.Model.Message", b =>
@@ -705,25 +687,6 @@ namespace DAL.Migrations
                         .IsRequired();
 
                     b.Navigation("Cv");
-                });
-
-            modelBuilder.Entity("bla.Model.CvProject", b =>
-                {
-                    b.HasOne("bla.Model.CvInfo.Cv", "OneCv")
-                        .WithMany()
-                        .HasForeignKey("CvId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("bla.Model.Project", "OneProject")
-                        .WithMany()
-                        .HasForeignKey("ProjId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("OneCv");
-
-                    b.Navigation("OneProject");
                 });
 
             modelBuilder.Entity("bla.Model.Message", b =>
