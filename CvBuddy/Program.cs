@@ -16,7 +16,8 @@ builder.Services.AddDbContext<CVBuddyContext>(options =>
 
 builder.Services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<CVBuddyContext>().AddDefaultTokenProviders();
 
-
+var dataDirectory = Path.Combine(builder.Environment.ContentRootPath, "App_Data");
+AppDomain.CurrentDomain.SetData("DataDirectory", dataDirectory);
 
 var app = builder.Build();
 
