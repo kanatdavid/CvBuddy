@@ -38,7 +38,7 @@ namespace bla.Controllers
                 }
                 else
                 {
-                    users = users.Where(u => !u.IsDeactivated! && !u.HasPrivateProfile).ToList();
+                    users = users.Where(u => !u.IsDeactivated! || !u.HasPrivateProfile).ToList();
                 }
 
                 if (!string.IsNullOrWhiteSpace(searchTerm))
